@@ -7,23 +7,25 @@ import os
 def action_update_grub_standard():
     # Detects if it should use /boot/grub or /boot/grub2
     target = "/boot/grub/grub.cfg" if os.path.exists("/boot/grub/grub.cfg") else "/boot/grub2/grub.cfg"
-    subprocess.run(["sudo", "grub-mkconfig", "-o", target], check=True)
+    # Added -v for verbosity
+    subprocess.run(["sudo", "grub-mkconfig", "-v", "-o", target], check=True)
 
 def action_update_grub_fedora():
-    # Fedora/RHEL standard path
-    subprocess.run(["sudo", "grub2-mkconfig", "-o", "/boot/grub2/grub.cfg"], check=True)
+    # Fedora/RHEL standard path with -v for verbosity
+    subprocess.run(["sudo", "grub2-mkconfig", "-v", "-o", "/boot/grub2/grub.cfg"], check=True)
 
 def action_update_initramfs_arch():
-    subprocess.run(["sudo", "mkinitcpio", "-P"], check=True)
+    # -v for verbose output
+    subprocess.run(["sudo", "mkinitcpio", "-P", "-v"], check=True)
 
 def action_update_initramfs_debian():
     subprocess.run(["sudo", "update-initramfs", "-u", "-k", "all"], check=True)
 
 def action_update_initramfs_fedora():
-    # Fedora/RHEL uses dracut
-    subprocess.run(["sudo", "dracut", "-f"], check=True)
+    # Fedora/RHEL uses dracut, added --verbose
+    subprocess.run(["sudo", "dracut", "-f", "--verbose"], check=True)
 
-# --- 2. DETECTION LOGIC (The "Auto-Detect") ---
+# --- 2. DETECTION LOGIC ---
 def get_available_tools():
     """Checks what system tools are available to build the menu dynamically."""
     detected = []
